@@ -1,0 +1,90 @@
+/* Khung Button cơ bản */
+.btn-element {
+  padding: 14px 28px;
+  border-radius: 12px;
+  font-size: 15px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  font-family: 'Segoe UI', system-ui, sans-serif;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  outline: none;
+  position: relative;
+  overflow: hidden;
+  transition: all 0.18s ease;
+  cursor: pointer;
+}
+
+/* Chiều rộng rộng tối đa hoặc tự động */
+.btn-full-width {
+  width: 100%;
+}
+.btn-auto-width {
+  width: auto;
+}
+
+/* --- TRẠNG THÁI VARIANT --- */
+
+/* 1. Variant Primary */
+.btn-primary {
+  background: linear-gradient(135deg, #007AFF 0%, #5856D6 100%);
+  color: #fff;
+  border: none;
+  box-shadow: 0 8px 24px rgba(0, 122, 255, 0.3);
+}
+.btn-primary:hover:not(:disabled) {
+  box-shadow: 0 12px 32px rgba(0, 122, 255, 0.45);
+}
+
+/* 2. Variant Secondary */
+.btn-secondary {
+  background: rgba(255, 255, 255, 0.06);
+  color: rgba(255, 255, 255, 0.85);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  box-shadow: none;
+}
+.btn-secondary:hover:not(:disabled) {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+/* 3. Variant Danger */
+.btn-danger {
+  background: linear-gradient(135deg, #ff3c3c 0%, #ff8c00 100%);
+  color: #fff;
+  border: none;
+  box-shadow: 0 8px 24px rgba(255, 60, 60, 0.28);
+}
+.btn-danger:hover:not(:disabled) {
+  box-shadow: 0 12px 32px rgba(255, 60, 60, 0.45);
+}
+
+/* --- CÁC TRẠNG THÁI ĐẶC BIỆT --- */
+
+/* Hiệu ứng thu nhỏ khi Click (Active) */
+.btn-element:active:not(:disabled) {
+  transform: scale(0.97);
+}
+
+/* Trạng thái bị vô hiệu hóa (Disabled hoặc Loading) */
+.btn-element:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  box-shadow: none !important;
+}
+
+/* Icon Loading xoay tròn */
+.btn-spinner {
+  width: 16px;
+  height: 16px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-top: 2px solid #fff;
+  border-radius: 50%;
+  animation: btnSpin 0.7s linear infinite;
+  flex-shrink: 0;
+}
+
+@keyframes btnSpin {
+  to { transform: rotate(360deg); }
+}

@@ -1,0 +1,101 @@
+/* Wrapper tổng */
+.input-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  width: 100%;
+}
+
+/* Nhãn hiển thị */
+.input-label {
+  font-size: 13px;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.6);
+  letter-spacing: 0.03em;
+  font-family: 'Segoe UI', system-ui, sans-serif;
+  transition: color 0.2s ease;
+}
+
+.input-label.has-error {
+  color: rgba(255, 100, 100, 0.9);
+}
+
+/* Khung bọc input và icon */
+.input-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  padding: 0 14px;
+  transition: all 0.2s ease;
+  opacity: 1;
+  cursor: text;
+}
+
+/* Trạng thái focused */
+.input-row.is-focused {
+  background: rgba(0, 122, 255, 0.06);
+  border-color: rgba(0, 122, 255, 0.6);
+  box-shadow: 0 0 0 3px rgba(0, 122, 255, 0.12);
+}
+
+/* Trạng thái error */
+.input-row.has-error {
+  background: rgba(255, 60, 60, 0.06);
+  border-color: rgba(255, 60, 60, 0.55);
+  box-shadow: 0 0 0 3px rgba(255, 60, 60, 0.1);
+}
+
+/* Trạng thái disabled */
+.input-row.is-disabled {
+  background: rgba(255, 255, 255, 0.03);
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Khung bọc icon phía bên trái */
+.input-icon-wrap {
+  color: rgba(255, 255, 255, 0.3);
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  transition: color 0.2s;
+}
+
+.input-row.is-focused .input-icon-wrap {
+  color: rgba(0, 122, 255, 0.7);
+}
+
+.input-row.has-error .input-icon-wrap {
+  color: rgba(255, 100, 100, 0.5);
+}
+
+/* Thẻ input chính */
+.input-element {
+  flex: 1;
+  background: transparent;
+  border: none;
+  outline: none;
+  color: #fff;
+  font-size: 15px;
+  padding: 13px 0;
+  font-family: 'Segoe UI', system-ui, sans-serif;
+  width: 100%;
+}
+
+.input-element:disabled {
+  cursor: not-allowed;
+}
+
+/* Dòng thông báo lỗi */
+.input-error-msg {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 12px;
+  color: rgba(255, 100, 100, 0.85);
+  font-family: 'Segoe UI', system-ui, sans-serif;
+  margin-top: -2px;
+}

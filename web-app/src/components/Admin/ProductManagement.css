@@ -1,0 +1,269 @@
+/* Tổng quan trang */
+.pm-page {
+  padding: 28px;
+  font-family: 'Segoe UI', system-ui, sans-serif;
+  background: #f7f8fa;
+  min-height: 100vh;
+}
+
+.pm-page-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.pm-page-title {
+  fontSize: 22px;
+  font-weight: 700;
+  color: #111;
+  margin: 0;
+}
+
+.pm-page-desc {
+  font-size: 13px;
+  color: #888;
+  margin-top: 4px;
+}
+
+/* Thẻ thống kê */
+.pm-summary-row {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 14px;
+  margin-bottom: 20px;
+}
+
+.pm-summary-card {
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  border-radius: 10px;
+  padding: 16px 18px;
+}
+
+/* Thanh bộ lọc */
+.pm-filter-bar {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 12px;
+  flex-wrap: wrap;
+}
+
+.pm-filter-group {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.pm-search {
+  padding: 8px 12px;
+  border-radius: 8px;
+  border: 1px solid #e0e0e0;
+  font-size: 13px;
+  outline: none;
+  font-family: inherit;
+  width: 240px;
+}
+
+.pm-select {
+  padding: 8px 10px;
+  border-radius: 8px;
+  border: 1px solid #e0e0e0;
+  font-size: 13px;
+  font-family: inherit;
+  outline: none;
+  background: #fff;
+  cursor: pointer;
+}
+
+.pm-select-sm {
+  padding: 5px 8px;
+  border-radius: 6px;
+  border: 1px solid #e0e0e0;
+  font-size: 12px;
+  font-family: inherit;
+  outline: none;
+  background: #fff;
+  cursor: pointer;
+}
+
+/* Thanh hành động hàng loạt */
+.pm-bulk-bar {
+  background: #eff6ff;
+  border: 1px solid #bfdbfe;
+  border-radius: 8px;
+  padding: 10px 16px;
+  margin-bottom: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.pm-bulk-text {
+  font-size: 13px;
+  color: #2563eb;
+  font-weight: 600;
+}
+
+/* Bảng dữ liệu */
+.pm-card {
+  background: #fff;
+  border-radius: 12px;
+  border: 1px solid #e5e7eb;
+  overflow: auto;
+}
+
+.pm-table {
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 900px;
+}
+
+.pm-th {
+  padding: 10px 14px;
+  font-size: 11px;
+  font-weight: 700;
+  color: #888;
+  text-align: left;
+  background: #fafafa;
+  border-bottom: 1px solid #f0f0f0;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.pm-tr {
+  border-bottom: 1px solid #f5f5f5;
+}
+
+.pm-tr:hover {
+  background: #fafafa;
+}
+
+.pm-td {
+  padding: 11px 14px;
+  vertical-align: middle;
+}
+
+.pm-cb {
+  accent-color: #2563eb;
+  width: 15px;
+  height: 15px;
+  cursor: pointer;
+}
+
+/* Chi tiết phần tử trong hàng */
+.pm-product-info {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.pm-product-name {
+  font-weight: 600;
+  font-size: 13px;
+  color: #111;
+}
+
+.pm-product-brand {
+  font-size: 11px;
+  color: #aaa;
+}
+
+.pm-img {
+  height: 38px;
+  background: #f3f4f6;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.pm-code {
+  background: #f3f4f6;
+  padding: 2px 7px;
+  border-radius: 5px;
+  font-size: 11px;
+  color: #555;
+  font-family: monospace;
+}
+
+.pm-category-text {
+  font-size: 12px;
+  color: #888;
+}
+
+.pm-price-main {
+  font-weight: 700;
+  font-size: 13px;
+  color: #111;
+}
+
+.pm-price-sale {
+  font-size: 11px;
+  color: #dc2626;
+  font-weight: 600;
+}
+
+.pm-stock-status {
+  font-weight: 700;
+  font-size: 13px;
+}
+
+.pm-stock-low-alert {
+  font-size: 10px;
+  color: #d97706;
+}
+
+.pm-action-group {
+  display: flex;
+  gap: 6px;
+  justify-content: flex-end;
+}
+
+/* Các loại Button */
+.pm-btn-primary {
+  padding: 9px 18px;
+  border-radius: 9px;
+  border: none;
+  background: #2563eb;
+  color: #fff;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: inherit;
+}
+
+.pm-btn-danger {
+  padding: 6px 14px;
+  border-radius: 7px;
+  border: none;
+  background: #dc2626;
+  color: #fff;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: inherit;
+}
+
+.pm-btn-icon {
+  width: 30px;
+  height: 30px;
+  border-radius: 7px;
+  border: 1px solid #e5e7eb;
+  background: #fafafa;
+  color: #555;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.pm-btn-icon-red {
+  color: #dc2626;
+  border-color: #fecaca;
+  background: #fff5f5;
+}

@@ -1,0 +1,73 @@
+
+#### SERVER #####
+/server/HELP.md
+/server/target/
+/target/
+/server/.mvn/wrapper/maven-wrapper.jar
+/server/src/main/**/target/
+/server/src/test/**/target/
+/server/.env
+/server/Dockerfile
+
+### STS ###
+/server/.apt_generated
+/server/.classpath
+/server/.factorypath
+/server/.project
+/server/.settings
+/server/.springBeans
+/server/.sts4-cache
+
+### IntelliJ IDEA ###
+.idea
+*.iws
+*.iml
+*.ipr
+
+### NetBeans ###
+/server/nbproject/private/
+/server/nbbuild/
+/server/dist/
+/server/nbdist/
+/server/.nb-gradle/
+/server/build/
+/server/src/main/**/build/
+/server/src/test/**/build/
+
+### VS Code ###
+/server/.vscodez
+
+
+
+#### WEB-APP ####
+
+# Logs
+web-app/logs
+web-app/*.log
+web-app/npm-debug.log*
+web-app/yarn-debug.log*
+web-app/yarn-error.log*
+web-app/pnpm-debug.log*
+web-app/lerna-debug.log*
+
+
+# Editor directories and files
+web-app/node_modules
+web-app/dist
+web-app/dist-ssr
+web-app/*.local
+
+
+web-app/# Editor directories and files
+web-app/.vscode/*
+web-app/!.vscode/extensions.json
+web-app/.idea
+web-app/.DS_Store
+web-app/*.suo
+web-app/*.ntvs*
+web-app/*.njsproj
+web-app/*.sln
+web-app/*.sw?
+
+#config
+web-app/.env

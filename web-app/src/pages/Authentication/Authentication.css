@@ -1,0 +1,340 @@
+/* Tổng quan nền */
+.auth-root {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #0a0a0f 0%, #0d1117 50%, #0a0e1a 100%);
+  padding: 24px 16px;
+  position: relative;
+  overflow: hidden;
+  font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+}
+
+.auth-bg {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.auth-bg-circle1 {
+  position: absolute;
+  width: 500px;
+  height: 500px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(0, 122, 255, 0.12) 0%, transparent 70%);
+  top: -100px;
+  right: -100px;
+}
+
+.auth-bg-circle2 {
+  position: absolute;
+  width: 400px;
+  height: 400px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(88, 86, 214, 0.1) 0%, transparent 70%);
+  bottom: -80px;
+  left: -80px;
+}
+
+.auth-bg-grid {
+  position: absolute;
+  inset: 0;
+  background-image: linear-gradient(rgba(255, 255, 255, 0.02) 1px, transparent 1px), 
+                    linear-gradient(90deg, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
+  background-size: 40px 40px;
+}
+
+/* Card chính */
+.auth-card {
+  background: rgba(255, 255, 255, 0.04);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 24px;
+  padding: 36px 32px 28px;
+  width: 100%;
+  max-width: 420px;
+  position: relative;
+  box-shadow: 0 24px 64px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  z-index: 2;
+}
+
+/* Brand logo */
+.auth-brand {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 28px;
+}
+
+.auth-brand-icon {
+  width: 52px;
+  height: 52px;
+  border-radius: 14px;
+  background: linear-gradient(135deg, #007AFF, #5856D6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  box-shadow: 0 8px 24px rgba(0, 122, 255, 0.35);
+}
+
+.auth-brand-name {
+  fontSize: 22px;
+  font-weight: 800;
+  color: #fff;
+  letter-spacing: 0.12em;
+  line-height: 1;
+}
+
+.auth-brand-tagline {
+  font-size: 11px;
+  color: rgba(255, 255, 255, 0.45);
+  letter-spacing: 0.06em;
+  margin-top: 3px;
+  text-transform: uppercase;
+}
+
+/* Tab điều hướng */
+.auth-tab-bar {
+  display: flex;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 12px;
+  padding: 4px;
+  margin-bottom: 28px;
+  gap: 4px;
+}
+
+.auth-tab {
+  flex: 1;
+  padding: 10px 0;
+  border-radius: 9px;
+  border: none;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 600;
+  transition: all 0.2s ease;
+  letter-spacing: 0.01em;
+  background: transparent;
+  color: rgba(255, 255, 255, 0.45);
+}
+
+.auth-tab.active {
+  background: linear-gradient(135deg, #007AFF, #5856D6);
+  color: #fff;
+  box-shadow: 0 4px 12px rgba(0, 122, 255, 0.3);
+}
+
+/* Form & Input */
+.auth-form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.auth-field-group {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+}
+
+.auth-label {
+  font-size: 13px;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.6);
+  letter-spacing: 0.03em;
+}
+
+.auth-input-wrap {
+  display: flex;
+  align-items: center;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  padding: 0 14px;
+  gap: 10px;
+  transition: all 0.2s ease;
+}
+
+.auth-input-wrap.focused {
+  border: 1px solid rgba(0, 122, 255, 0.6);
+  background: rgba(0, 122, 255, 0.06);
+  box-shadow: 0 0 0 3px rgba(0, 122, 255, 0.12);
+}
+
+.auth-input-icon {
+  color: rgba(255, 255, 255, 0.3);
+  flex-shrink: 0;
+}
+
+.auth-input {
+  flex: 1;
+  background: transparent;
+  border: none;
+  outline: none;
+  color: #fff;
+  font-size: 15px;
+  padding: 13px 0;
+  font-family: inherit;
+}
+
+.auth-eye-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: rgba(255, 255, 255, 0.35);
+  display: flex;
+  align-items: center;
+  padding: 4px;
+  border-radius: 6px;
+  transition: color 0.2s;
+  flex-shrink: 0;
+}
+
+.auth-eye-btn:hover {
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.auth-forgot-row {
+  text-align: right;
+  margin-top: -4px;
+}
+
+.auth-forgot-link {
+  font-size: 13px;
+  color: #007AFF;
+  text-decoration: none;
+  font-weight: 500;
+}
+
+/* Nút Submit */
+.auth-submit-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 15px 0;
+  background: linear-gradient(135deg, #007AFF 0%, #5856D6 100%);
+  border: none;
+  border-radius: 12px;
+  color: #fff;
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+  letter-spacing: 0.02em;
+  box-shadow: 0 8px 24px rgba(0, 122, 255, 0.35);
+  transition: all 0.2s ease;
+  margin-top: 4px;
+  font-family: inherit;
+}
+
+.auth-submit-btn:hover {
+  opacity: 0.95;
+  transform: translateY(-1px);
+}
+
+/* Divider ngăn cách */
+.auth-divider {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 4px 0;
+}
+
+.auth-divider-line {
+  flex: 1;
+  height: 1px;
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.auth-divider-text {
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.3);
+  white-space: nowrap;
+  letter-spacing: 0.03em;
+}
+
+/* Mạng xã hội */
+.auth-social-row {
+  display: flex;
+  gap: 10px;
+}
+
+.auth-social-btn {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 12px 0;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  color: rgba(255, 255, 255, 0.8);
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-family: inherit;
+}
+
+.auth-social-btn:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.auth-switch-text {
+  text-align: center;
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.35);
+  margin-top: 20px;
+  margin-bottom: 0;
+}
+
+.auth-switch-link {
+  background: none;
+  border: none;
+  color: #007AFF;
+  font-weight: 600;
+  cursor: pointer;
+  font-size: 13px;
+  font-family: inherit;
+  padding: 0;
+}
+
+/* Các Icon trôi nổi (Floating Effects) */
+.floating-icon {
+  position: absolute;
+  user-select: none;
+  pointer-events: none;
+}
+
+.floating-1 {
+  top: 12%;
+  left: 8%;
+  font-size: 28px;
+  opacity: 0.15;
+  animation: authFloat 6s ease-in-out infinite;
+}
+
+.floating-2 {
+  top: 70%;
+  right: 7%;
+  font-size: 22px;
+  opacity: 0.12;
+  animation: authFloat 8s ease-in-out infinite reverse;
+}
+
+.floating-3 {
+  bottom: 15%;
+  left: 6%;
+  font-size: 18px;
+  opacity: 0.1;
+  animation: authFloat 7s ease-in-out infinite;
+}
+
+/* Hiệu ứng mượt mà nhấp nhô */
+@keyframes authFloat {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-15px); }
+}
