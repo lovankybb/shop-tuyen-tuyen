@@ -1,10 +1,14 @@
-const BASE  = 'https://api.cloudinary.com/v1_1/dh7l8j5s9/image/upload';
+const CLOUD_NAME = import.meta.env.VITE_CLOUDINARY_CLOUD_NAME;
+const UPLOAD_PRESET = import.meta.env.VITE_CLOUDINARY_PRESET_NAME;
+
+
+const BASE  = `https://api.cloudinary.com/v1_1/${CLOUD_NAME}/image/upload`;
 
 export const CloudinaryService = {
     uploadImage: async (file) => {
         const formData = new FormData();
         formData.append('file', file);
-        formData.append('upload_preset', 'ml_default');
+        formData.append('upload_preset', UPLOAD_PRESET);
 
         try {
             const response = await fetch(BASE, {

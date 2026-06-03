@@ -9,7 +9,6 @@
 }
 
 .about-root {
-  margin-top: 30px;
   font-family: "Rajdhani", sans-serif;
   background: linear-gradient(160deg, #060c1a 0%, #0a1428 60%, #060c1a 100%);
   min-height: 100vh;
@@ -113,7 +112,7 @@
 }
 
 .stat-card {
-  background: rgba(0, 100, 255, 0.06);
+  background: rgba(3, 37, 89, 0.06);
   border: 1px solid rgba(0, 180, 255, 0.12);
   border-radius: 18px;
   padding: 28px 20px;

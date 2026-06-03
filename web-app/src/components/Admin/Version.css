@@ -69,7 +69,7 @@
 
 .version-card-head {
   display: flex;
-  justify-content: space-between;
+  justify-content: center;
   align-items: center;
   gap: 12px;
   flex-wrap: wrap;
@@ -133,7 +133,7 @@
 
 .version-table {
   width: 100%;
-  min-width: 680px;
+  min-width: 300px;
   border-collapse: collapse;
 }
 
@@ -175,78 +175,6 @@
   color: #111827;
 
   word-break: break-word;
-}
-
-.version-slug {
-  display: inline-block;
-
-  padding: 3px 8px;
-
-  border-radius: 6px;
-
-  background: #f3f4f6;
-  color: #4b5563;
-
-  font-size: 12px;
-  font-family: monospace;
-
-  word-break: break-word;
-}
-
-/* ───────────────────────── */
-/* TYPE BADGE */
-/* ───────────────────────── */
-
-.version-type {
-  display: inline-flex;
-  align-items: center;
-
-  padding: 4px 10px;
-
-  border-radius: 999px;
-
-  font-size: 11px;
-  font-weight: 700;
-
-  white-space: nowrap;
-}
-
-.version-type-storage {
-  background: #dbeafe;
-  color: #2563eb;
-}
-
-.version-type-ram {
-  background: #ede9fe;
-  color: #7c3aed;
-}
-
-/* ───────────────────────── */
-/* STATUS */
-/* ───────────────────────── */
-
-.version-status-btn {
-  border: none;
-  border-radius: 999px;
-
-  padding: 4px 11px;
-
-  font-size: 11px;
-  font-weight: 700;
-
-  cursor: pointer;
-
-  white-space: nowrap;
-}
-
-.version-status-on {
-  background: #dcfce7;
-  color: #16a34a;
-}
-
-.version-status-off {
-  background: #fee2e2;
-  color: #dc2626;
 }
 
 /* ───────────────────────── */

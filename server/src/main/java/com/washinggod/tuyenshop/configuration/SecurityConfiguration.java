@@ -1,6 +1,5 @@
 package com.washinggod.tuyenshop.configuration;
 
-import com.washinggod.tuyenshop.configuration.properties.JwtConfig;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -10,9 +9,9 @@ import org.springframework.security.config.annotation.method.configuration.Enabl
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.oauth2.jwt.JwtDecoder;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter;
 import org.springframework.security.oauth2.server.resource.authentication.JwtGrantedAuthoritiesConverter;
 import org.springframework.security.web.SecurityFilterChain;
@@ -25,14 +24,21 @@ import org.springframework.web.filter.CorsFilter;
 @EnableMethodSecurity(securedEnabled = true)
 public class SecurityConfiguration {
 
-    private final  String [] PUBLIC_ENDPOINT = {"/**"};
+    private final String[] PUBLIC_ENDPOINT = {
+            "/**"
+    };
 
-    @Value("app.sec.cors.end-point")
+    private final CustomJwtDecoder customJwtDecoder;
+
+    @Value("${app.cloudinary.cors.endpoint}")
     private String corsEndpoint;
 
+    public SecurityConfiguration(CustomJwtDecoder customJwtDecoder) {
+        this.customJwtDecoder = customJwtDecoder;
+    }
 
     @Bean
-    SecurityFilterChain filterChain(HttpSecurity http, JwtDecoder jwtDecoder) throws Exception {
+    SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
 
         http.authorizeHttpRequests(
                 auth -> {
@@ -45,7 +51,7 @@ public class SecurityConfiguration {
                 });
 
         http.csrf(AbstractHttpConfigurer::disable);
-
+        http.sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
         http.cors(Customizer.withDefaults());
 
         http.oauth2ResourceServer(
@@ -53,7 +59,7 @@ public class SecurityConfiguration {
                     oauth2.jwt(
                             jwtConfigurer -> {
                                 jwtConfigurer
-                                        .decoder(jwtDecoder)
+                                        .decoder(customJwtDecoder) // Use the custom decoder
                                         .jwtAuthenticationConverter(this.jwtAuthenticationConverter());
                             });
                 });
@@ -61,7 +67,7 @@ public class SecurityConfiguration {
         return http.build();
     }
 
-    //    config jwt authentication converter
+    @Bean
     JwtAuthenticationConverter jwtAuthenticationConverter() {
         JwtAuthenticationConverter jwtAuthenticationConverter = new JwtAuthenticationConverter();
         JwtGrantedAuthoritiesConverter jwtGrantedAuthoritiesConverter =
@@ -73,11 +79,10 @@ public class SecurityConfiguration {
 
     @Bean
     CorsFilter corsFilter() {
-
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.addAllowedHeader("*"); // allow header
-        configuration.addAllowedMethod("*"); // allow method
-        configuration.addAllowedOrigin(corsEndpoint); // allow frontend
+        configuration.addAllowedHeader("*");
+        configuration.addAllowedMethod("*");
+        configuration.addAllowedOrigin(corsEndpoint); // Use specific origin from properties
         UrlBasedCorsConfigurationSource urlBasedCorsConfigurationSource =
                 new UrlBasedCorsConfigurationSource();
         urlBasedCorsConfigurationSource.registerCorsConfiguration("/**", configuration);
@@ -88,10 +93,4 @@ public class SecurityConfiguration {
     PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder(10);
     }
-
-    @Bean
-    JwtConfig jwtConfig() {
-        return new JwtConfig();
-    }
 }
-

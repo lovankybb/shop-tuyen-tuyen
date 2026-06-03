@@ -1,5 +1,10 @@
-import { useState } from "react";
-import "./ProductManagement.css"; // Import file css đã tách
+import { useEffect, useMemo, useState } from "react";
+import "./ProductManagement.css"; 
+import { getAllProducts, deleteProduct, changeProductStatus } from "../../service/ProductService";
+import {getAllBrands} from "../../service/BrandService"
+import SuccessPopup from "../Popup/SuccessPopup";
+import ErrorPopup from "../Popup/ErrorPopup";
+import ConfirmPopup from "../Popup/ConfirmPopup";
 
 const PRODUCTS = [
   {
@@ -142,14 +147,15 @@ const EditIcon = () => (
   </svg>
 );
 
-const ProductItem = (
-  {p,
+const ProductItem = ({
+  p,
   toggleSelect,
   selected,
   isLow,
   changeStatus,
-  handleDelete,}
-) => {
+  handleDelete,
+  onUpdateProduct,
+}) => {
   return (
     <tr className="pm-tr">
       <td className="pm-td">
@@ -205,7 +211,11 @@ const ProductItem = (
       </td>
       <td className="pm-td">
         <div className="pm-action-group">
-          <button className="pm-btn-icon" title="Sửa">
+          <button
+            className="pm-btn-icon"
+            title="Sửa"
+            onClick={() => onUpdateProduct(p.id)}
+          >
             <EditIcon />
           </button>
           <button
@@ -221,24 +231,52 @@ const ProductItem = (
   );
 };
 
-export default function ProductManagement({ onCreateProduct }) {
+export default function ProductManagement({
+  onCreateProduct,
+  onUpdateProduct,
+}) {
   const [products, setProducts] = useState(PRODUCTS);
   const [search, setSearch] = useState("");
   const [filterStatus, setFilterStatus] = useState("all");
   const [filterBrand, setFilterBrand] = useState("all");
   const [selected, setSelected] = useState([]);
+  const [deleteId, setDeleteId] = useState(null);
+  const [isDeleteSelected, setIsDeleteSelected] = useState(false); 
 
-  const brands = [...new Set(PRODUCTS.map((p) => p.brand))];
+  const [showSuccess, setShowSuccess] = useState(false);
+  const [showError, setShowError] = useState(false);
+  const [showConfirm, setShowConfirm] = useState(false);
 
-  const filtered = products.filter((p) => {
-    const matchSearch =
-      search === "" ||
-      p.name.toLowerCase().includes(search.toLowerCase()) ||
-      p.sku.toLowerCase().includes(search.toLowerCase());
-    const matchStatus = filterStatus === "all" || p.status === filterStatus;
-    const matchBrand = filterBrand === "all" || p.brand === filterBrand;
-    return matchSearch && matchStatus && matchBrand;
-  });
+  const [brands, setBrands] = useState([]);
+  
+
+
+  useEffect(()=> {
+    const fetchProduct = async ()=> {
+      const data = await getAllProducts(); 
+      setProducts(data); 
+    }
+
+    const fetchBrands = async ()=> {
+      const data = await getAllBrands(); 
+      setBrands(data); 
+    }
+
+    fetchBrands(); fetchProduct();
+  }, []);
+
+
+  const filtered = useMemo(() => {
+    return products.filter((p) => {
+      const matchSearch =
+        search === "" ||
+        p.name.toLowerCase().includes(search.toLowerCase()) ||
+        p.slug.toLowerCase().includes(search.toLowerCase());
+      const matchStatus = filterStatus === "all" || p.status === filterStatus;
+      const matchBrand = filterBrand === "all" || p.brand === filterBrand;
+      return matchSearch && matchStatus && matchBrand;
+    });
+  }, [products, search, filterStatus, filterBrand]);
 
   const toggleSelect = (id) =>
     setSelected((p) =>
@@ -250,22 +288,31 @@ export default function ProductManagement({ onCreateProduct }) {
       selected.length === filtered.length ? [] : filtered.map((p) => p.id),
     );
 
-  const handleDelete = (id) => {
-    if (!window.confirm("Xoá sản phẩm này?")) return;
+  const  handleDelete = async (id) => {
+    // await deleteProduct(id);
     setProducts((p) => p.filter((x) => x.id !== id));
     setSelected((p) => p.filter((x) => x !== id));
   };
 
   const handleDeleteSelected = () => {
-    if (!window.confirm(`Xoá ${selected.length} sản phẩm đã chọn?`)) return;
     setProducts((p) => p.filter((x) => !selected.includes(x.id)));
     setSelected([]);
+    setIsDeleteSelected(false);
   };
 
-  const changeStatus = (id, status) =>
-    setProducts((p) => p.map((x) => (x.id === id ? { ...x, status } : x)));
+  const changeStatus = (id, status) => {
+    changeProductStatus(id, status).then((updated) => {
+      setProducts((p) =>
+        p.map((x) => (x.id === id ? { ...x, status: updated.status } : x)),
+      );
+    }).catch((err) => {
+      console.error("Error changing status:", err);
+      setShowError(true);
+    }); 
+  }
 
   return (
+    <>
     <div className="pm-page">
       {/* Header */}
       <div className="pm-page-head">
@@ -353,7 +400,10 @@ export default function ProductManagement({ onCreateProduct }) {
           <span className="pm-bulk-text">
             Đã chọn {selected.length} sản phẩm
           </span>
-          <button className="pm-btn-danger" onClick={handleDeleteSelected}>
+          <button className="pm-btn-danger" onClick={()=> {
+            setIsDeleteSelected(true); 
+            setShowConfirm(true);
+          }}>
             Xoá đã chọn
           </button>
         </div>
@@ -415,7 +465,11 @@ export default function ProductManagement({ onCreateProduct }) {
                   selected={selected}
                   isLow={isLow}
                   changeStatus={changeStatus}
-                  handleDelete={handleDelete}
+                  handleDelete={()=> {
+                    setDeleteId(p.id);
+                    setShowConfirm(true);
+                  }}
+                  onUpdateProduct={onUpdateProduct}
                 />
               );
             })}
@@ -423,5 +477,29 @@ export default function ProductManagement({ onCreateProduct }) {
         </table>
       </div>
     </div>
+    <ConfirmPopup
+    isOpen={showConfirm}
+    title="Xác nhận xoá"
+    message= {isDeleteSelected ? "Xoá sản phẩm đã chọn"  : "Bạn có chắc muốn xoá sản phẩm này?"}
+    onCancel={() => setShowConfirm(false)}
+    onConfirm={() => {
+      isDeleteSelected ? handleDeleteSelected : handleDelete(deleteId);
+      setShowConfirm(false);
+      setShowSuccess(true);
+    }}
+    />
+    <SuccessPopup
+      isOpen={showSuccess}
+      title="Thành công"
+      message="Sản phẩm đã được xoá."
+      onClose={() => setShowSuccess(false)}
+    />
+    <ErrorPopup
+      isOpen={showError}
+      title="Lỗi"
+      message="Đã có lỗi xảy ra. Vui lòng thử lại."
+      onClose={() => setShowError(false)}
+    />
+    </>
   );
 }

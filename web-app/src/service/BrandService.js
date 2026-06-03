@@ -1,7 +1,9 @@
 const BASE_URL = import.meta.env.VITE_BASE_URL;
 
+
+
 const getAllBrands = async () => {
-  const url = `${BASE_URL}/api/brands`;
+  const url = `${BASE_URL}/brands`;
   try {
     const response = await fetch(url, {
       method: "GET",
@@ -24,7 +26,7 @@ const getAllBrands = async () => {
 }
 
 const createBrand = async (brandData) => {
-  const url = `${BASE_URL}/api/brands`;
+  const url = `${BASE_URL}/brands`;
   try {
     const response = await fetch(url, {
       method: "POST",
@@ -48,7 +50,7 @@ const createBrand = async (brandData) => {
 }
 
 const updateBrand = async (brandId, brandData) => {
-  const url = `${BASE_URL}/api/brands/${brandId}`;
+  const url = `${BASE_URL}/brands/${brandId}`;
   try {
     const response = await fetch(url, {
       method: "PUT",
@@ -73,7 +75,7 @@ const updateBrand = async (brandId, brandData) => {
 
 
 const deleteBrand = async (brandId) => {
-  const url = `${BASE_URL}/api/brands/${brandId}`;
+  const url = `${BASE_URL}/brands/${brandId}`;
   try {
     const response = await fetch(url, {
       method: "DELETE",

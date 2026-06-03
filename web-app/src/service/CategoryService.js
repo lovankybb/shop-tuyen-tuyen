@@ -1,7 +1,9 @@
-const  BASE_URL = import.meta.env.VITE_BASE_URL;
+const BASE_URL = import.meta.env.VITE_BASE_URL;
+
+
 
 const getAllCategories = async () => {
-  const url = `${BASE_URL}/api/categories`;
+  const url = `${BASE_URL}/categories`;
   try {
     const response = await fetch(url, {
       method: "GET",
@@ -25,7 +27,7 @@ const getAllCategories = async () => {
 
 
 const createCategory = async (categoryData) => {
-  const url = `${BASE_URL}/api/categories`;
+  const url = `${BASE_URL}/categories`;
   try {
     const response = await fetch(url, {
       method: "POST",
@@ -49,7 +51,7 @@ const createCategory = async (categoryData) => {
 }
 
 const updateCategory = async (categoryId, categoryData) => {
-  const url = `${BASE_URL}/api/categories/${categoryId}`;
+  const url = `${BASE_URL}/categories/${categoryId}`;
   try {
     const response = await fetch(url, {
       method: "PUT",
@@ -73,7 +75,7 @@ const updateCategory = async (categoryId, categoryData) => {
 }
 
 const deleteCategory = async (categoryId) => {
-  const url = `${BASE_URL}/api/categories/${categoryId}`;
+  const url = `${BASE_URL}/categories/${categoryId}`;
   try {
     const response = await fetch(url, {
       method: "DELETE",

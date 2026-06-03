@@ -1,24 +1,15 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import "./Version.css";
+import {
+  createVersion,
+  getVersions,
+  updateVersion,
+  deleteVersion,
+} from "../../service/VersionService";
 
-const INIT_VERSIONS = [
-  { id: 1, name: "64 GB", slug: "64gb", type: "storage", status: true },
-  { id: 2, name: "128 GB", slug: "128gb", type: "storage", status: true },
-  { id: 3, name: "256 GB", slug: "256gb", type: "storage", status: true },
-  { id: 4, name: "512 GB", slug: "512gb", type: "storage", status: true },
-  { id: 5, name: "1 TB", slug: "1tb", type: "storage", status: false },
-
-  { id: 6, name: "6 GB RAM", slug: "6gb-ram", type: "ram", status: true },
-  { id: 7, name: "8 GB RAM", slug: "8gb-ram", type: "ram", status: true },
-  { id: 8, name: "12 GB RAM", slug: "12gb-ram", type: "ram", status: true },
-  { id: 9, name: "16 GB RAM", slug: "16gb-ram", type: "ram", status: false },
-];
-
-const EMPTY = {
-  name: "",
-  slug: "",
-  type: "storage",
-};
+import ConfirmPopup from "../Popup/ConfirmPopup";
+import SuccessPopup from "../Popup/SuccessPopup";
+import ErrorPopup from "../Popup/ErrorPopup";
 
 const TrashIcon = () => (
   <svg
@@ -71,43 +62,39 @@ const PlusIcon = () => (
 );
 
 export default function Version() {
-  const [versions, setVersions] = useState(INIT_VERSIONS);
-  const [form, setForm] = useState(EMPTY);
+  const [versions, setVersions] = useState([]);
+  const [versionName, setVersionName] = useState("");
   const [editId, setEditId] = useState(null);
   const [errors, setErrors] = useState({});
   const [search, setSearch] = useState("");
 
-  const autoSlug = (name) =>
-    name
-      .toLowerCase()
-      .replace(/\s+/g, "-")
-      .replace(/[^a-z0-9-]/g, "");
+  const [confirmOpen, setConfirmOpen] = useState(false);
+  const [successOpen, setSuccessOpen] = useState(false);
+  const [errorOpen, setErrorOpen] = useState(false);
 
-  const handleChange = (key) => (e) => {
-    const value = e.target.value;
+  const [deleteId, setDeleteId] = useState(null);
 
-    setForm((prev) => ({
-      ...prev,
-      [key]: value,
-      ...(key === "name" && !editId
-        ? { slug: autoSlug(value) }
-        : {}),
-    }));
+  const [errorMessage, setErrorMessage] = useState("");
+  const [successMessage, setSuccessMessage] = useState("");
 
-    if (errors[key]) {
-      setErrors((prev) => ({ ...prev, [key]: "" }));
-    }
-  };
+  useEffect(() => {
+    const fetchVersions = async () => {
+      try {
+        const data = await getVersions();
+        setVersions(data);
+      } catch (error) {
+        console.error("Error fetching versions:", error);
+      }
+    };
+
+    fetchVersions();
+  }, []);
 
   const validate = () => {
     const err = {};
 
-    if (!form.name.trim()) {
+    if (!versionName.trim()) {
       err.name = "Vui lòng nhập tên phiên bản";
-    }
-
-    if (!form.slug.trim()) {
-      err.slug = "Vui lòng nhập slug";
     }
 
     return err;
@@ -124,331 +111,235 @@ export default function Version() {
     }
 
     if (editId) {
-      setVersions((prev) =>
-        prev.map((v) =>
-          v.id === editId
-            ? { ...v, ...form }
-            : v
-        )
-      );
+      const updatedVersion = {
+        id: editId,
+        name: versionName,
+      };
+
+      updateVersion(editId, updatedVersion)
+        .then(() => {
+          setVersions((prev) =>
+            prev.map((v) => (v.id === editId ? updatedVersion : v)),
+          );
+          setEditId(null);
+          setSuccessMessage("Phiên bản đã được cập nhật thành công.");
+          setSuccessOpen(true);
+        })
+        .catch((error) => {
+          setErrorMessage(
+            "Đã có lỗi xảy ra khi cập nhật phiên bản. Vui lòng thử lại.",
+          );
+          setErrorOpen(true);
+          console.error("Error updating version:", error);
+        });
 
       setEditId(null);
     } else {
-      setVersions((prev) => [
-        ...prev,
-        {
-          id: Date.now(),
-          ...form,
-          status: true,
-        },
-      ]);
+      createVersion({ name: versionName })
+        .then((newVersion) => {
+          setVersions((prev) => [...prev, newVersion]);
+          setVersionName("");
+          setSuccessMessage("Phiên bản đã được tạo thành công.");
+          setSuccessOpen(true);
+        })
+        .catch((error) => {
+          setErrorMessage(
+            "Đã có lỗi xảy ra khi tạo phiên bản. Vui lòng thử lại.",
+          );
+          setErrorOpen(true);
+          console.error("Error creating version:", error);
+        });
     }
 
-    setForm(EMPTY);
     setErrors({});
   };
 
   const handleEdit = (version) => {
     setEditId(version.id);
 
-    setForm({
-      name: version.name,
-      slug: version.slug,
-      type: version.type,
-    });
-
+    setVersionName(version.name);
     setErrors({});
   };
 
   const handleCancel = () => {
     setEditId(null);
-    setForm(EMPTY);
+    setVersionName("");
     setErrors({});
   };
 
   const handleDelete = (id) => {
-    if (window.confirm("Xóa phiên bản này?")) {
-      setVersions((prev) =>
-        prev.filter((v) => v.id !== id)
-      );
-    }
+    deleteVersion(id)
+      .then(() => {
+        setVersions((prev) => prev.filter((v) => v.id !== id));
+        setSuccessMessage("Phiên bản đã được xóa thành công.");
+        setSuccessOpen(true);
+      })
+      .catch((error) => {
+        console.error("Error deleting version:", error);
+        setErrorMessage(
+          "Đã có lỗi xảy ra khi xóa phiên bản. Vui lòng thử lại.",
+        );
+        setErrorOpen(true);
+      });
   };
 
-  const toggleStatus = (id) => {
-    setVersions((prev) =>
-      prev.map((v) =>
-        v.id === id
-          ? { ...v, status: !v.status }
-          : v
-      )
-    );
-  };
-
-  const filtered = versions.filter(
-    (v) =>
-      v.name.toLowerCase().includes(search.toLowerCase()) ||
-      v.slug.toLowerCase().includes(search.toLowerCase())
+  const filtered = versions.filter((v) =>
+    v.name.toLowerCase().includes(search.toLowerCase()),
   );
 
   return (
-    <div className="version-page">
+    <>
+      {" "}
+      <div className="version-page">
+        {/* Header */}
+        <div className="version-page-head">
+          <div>
+            <h1 className="version-page-title">Phiên bản</h1>
 
-      {/* Header */}
-      <div className="version-page-head">
-        <div>
-          <h1 className="version-page-title">
-            Phiên bản
-          </h1>
-
-          <p className="version-page-desc">
-            Quản lý dung lượng và RAM sản phẩm
-          </p>
-        </div>
-
-        <div className="version-badge">
-          {versions.length} phiên bản
-        </div>
-      </div>
-
-      <div className="version-wrap">
-
-        {/* TABLE */}
-        <div className="version-card">
-
-          <div className="version-card-head">
-            <span className="version-card-title">
-              Danh sách phiên bản
-            </span>
-
-            <input
-              className="version-input version-search"
-              placeholder="Tìm kiếm..."
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-            />
+            <p className="version-page-desc">
+              Quản lý dung lượng và RAM sản phẩm
+            </p>
           </div>
 
-          <table className="version-table">
-            <thead>
-              <tr>
-                <th className="version-th">Tên</th>
-                <th className="version-th">Slug</th>
-                <th className="version-th">Loại</th>
-                <th className="version-th">Trạng thái</th>
-                <th className="version-th"></th>
-              </tr>
-            </thead>
+          <div className="version-badge">{versions.length} phiên bản</div>
+        </div>
 
-            <tbody>
-              {filtered.length === 0 && (
+        <div className="version-wrap">
+          {/* TABLE */}
+          <div className="version-card">
+            <div className="version-card-head">
+              <span className="version-card-title">Danh sách phiên bản</span>
+
+              <input
+                className="version-input version-search"
+                placeholder="Tìm kiếm..."
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+              />
+            </div>
+
+            <table className="version-table">
+              <thead>
                 <tr>
-                  <td
-                    colSpan={5}
-                    className="version-empty"
-                  >
-                    Không có dữ liệu
-                  </td>
+                  <th className="version-th">Tên</th>
+                  <th className="version-th"></th>
                 </tr>
-              )}
+              </thead>
 
-              {filtered.map((v) => (
-                <tr key={v.id} className="version-tr">
+              <tbody>
+                {filtered.length === 0 && (
+                  <tr>
+                    <td colSpan={5} className="version-empty">
+                      Không có dữ liệu
+                    </td>
+                  </tr>
+                )}
 
-                  <td className="version-td">
-                    <span className="version-name">
-                      {v.name}
-                    </span>
-                  </td>
+                {filtered.map((v) => (
+                  <tr key={v.id} className="version-tr">
+                    <td className="version-td">
+                      <span className="version-name">{v.name}</span>
+                    </td>
 
-                  <td className="version-td">
-                    <code className="version-slug">
-                      {v.slug}
-                    </code>
-                  </td>
+                    <td className="version-td version-action-cell">
+                      <button
+                        className="version-icon-btn"
+                        onClick={() => handleEdit(v)}
+                      >
+                        <EditIcon />
+                      </button>
 
-                  <td className="version-td">
-                    <span
-                      className={`version-type ${
-                        v.type === "ram"
-                          ? "version-type-ram"
-                          : "version-type-storage"
-                      }`}
-                    >
-                      {v.type === "ram"
-                        ? "RAM"
-                        : "Dung lượng"}
-                    </span>
-                  </td>
-
-                  <td className="version-td">
-                    <button
-                      onClick={() => toggleStatus(v.id)}
-                      className={`version-status-btn ${
-                        v.status
-                          ? "version-status-on"
-                          : "version-status-off"
-                      }`}
-                    >
-                      {v.status ? "Hiện" : "Ẩn"}
-                    </button>
-                  </td>
-
-                  <td className="version-td version-action-cell">
-                    <button
-                      className="version-icon-btn"
-                      onClick={() => handleEdit(v)}
-                    >
-                      <EditIcon />
-                    </button>
-
-                    <button
-                      className="version-icon-btn version-icon-red"
-                      onClick={() => handleDelete(v.id)}
-                    >
-                      <TrashIcon />
-                    </button>
-                  </td>
-
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-
-        {/* FORM */}
-        <div className="version-card">
-
-          <div className="version-card-head">
-            <span className="version-card-title">
-              {editId
-                ? "Sửa phiên bản"
-                : "Thêm phiên bản"}
-            </span>
-
-            {editId && (
-              <button
-                className="version-cancel-btn"
-                onClick={handleCancel}
-              >
-                Huỷ
-              </button>
-            )}
+                      <button
+                        className="version-icon-btn version-icon-red"
+                        onClick={() => {
+                          setConfirmOpen(true);
+                          setDeleteId(v.id);
+                        }}
+                      >
+                        <TrashIcon />
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
           </div>
 
-          <form
-            className="version-form"
-            onSubmit={handleSubmit}
-            noValidate
-          >
+          {/* FORM */}
+          <div className="version-card">
+            <div className="version-card-head">
+              <span className="version-card-title">
+                {editId ? "Sửa phiên bản" : "Thêm phiên bản"}
+              </span>
 
-            {/* Name */}
-            <div>
-              <label className="version-label">
-                Tên phiên bản *
-              </label>
-
-              <input
-                className={`version-input ${
-                  errors.name ? "version-input-error" : ""
-                }`}
-                placeholder="VD: 256 GB"
-                value={form.name}
-                onChange={handleChange("name")}
-              />
-
-              {errors.name && (
-                <span className="version-error">
-                  {errors.name}
-                </span>
+              {editId && (
+                <button className="version-cancel-btn" onClick={handleCancel}>
+                  Huỷ
+                </button>
               )}
             </div>
 
-            {/* Slug */}
-            <div>
-              <label className="version-label">
-                Slug *
-              </label>
+            <form className="version-form" onSubmit={handleSubmit} noValidate>
+              {/* Name */}
+              <div>
+                <label className="version-label">Tên phiên bản *</label>
 
-              <input
-                className={`version-input ${
-                  errors.slug ? "version-input-error" : ""
-                }`}
-                placeholder="VD: 256gb"
-                value={form.slug}
-                onChange={handleChange("slug")}
-              />
-
-              {errors.slug && (
-                <span className="version-error">
-                  {errors.slug}
-                </span>
-              )}
-            </div>
-
-            {/* Type */}
-            <div>
-              <label className="version-label">
-                Loại
-              </label>
-
-              <select
-                className="version-input"
-                value={form.type}
-                onChange={handleChange("type")}
-              >
-                <option value="storage">
-                  Dung lượng
-                </option>
-
-                <option value="ram">
-                  RAM
-                </option>
-              </select>
-            </div>
-
-            {/* Preview */}
-            {form.name && (
-              <div className="version-preview-card">
-
-                <div
-                  className={`version-preview-dot ${
-                    form.type === "ram"
-                      ? "version-preview-ram"
-                      : "version-preview-storage"
+                <input
+                  className={`version-input ${
+                    errors.name ? "version-input-error" : ""
                   }`}
+                  placeholder="VD: 256 GB"
+                  value={versionName}
+                  onChange={(e) => setVersionName(e.target.value)}
                 />
 
-                <div>
-                  <div className="version-preview-name">
-                    {form.name}
-                  </div>
+                {errors.name && (
+                  <span className="version-error">{errors.name}</span>
+                )}
+              </div>
 
-                  <div className="version-preview-meta">
-                    {form.slug} ·{" "}
-                    {form.type === "ram"
-                      ? "RAM"
-                      : "Dung lượng"}
+              {/* Preview */}
+              {versionName && (
+                <div className="version-preview-card">
+                  <div>
+                    <div className="version-preview-name">{versionName}</div>
                   </div>
                 </div>
+              )}
 
-              </div>
-            )}
+              <button type="submit" className="version-submit-btn">
+                <PlusIcon />
 
-            <button
-              type="submit"
-              className="version-submit-btn"
-            >
-              <PlusIcon />
-
-              {editId
-                ? "Cập nhật phiên bản"
-                : "Thêm phiên bản"}
-            </button>
-
-          </form>
+                {editId ? "Cập nhật phiên bản" : "Thêm phiên bản"}
+              </button>
+            </form>
+          </div>
         </div>
-
       </div>
-    </div>
+      <ConfirmPopup
+        isOpen={confirmOpen}
+        title="Xác nhận xóa phiên bản"
+        message="Bạn có chắc chắn muốn xóa phiên bản này không? Hành động này không thể hoàn tác."
+        confirmInput={null}
+        onConfirm={() => {
+          handleDelete(deleteId);
+          setSuccessOpen(true);
+          setConfirmOpen(false);
+        }}
+        onCancel={() => setConfirmOpen(false)}
+      />
+      <SuccessPopup
+        isOpen={successOpen}
+        title="Thành công"
+        message={successMessage}
+        onClose={() => setSuccessOpen(false)}
+      />
+      <ErrorPopup
+        isOpen={errorOpen}
+        title="Lỗi"
+        message={errorMessage}
+        onClose={() => setErrorOpen(false)}
+      />
+    </>
   );
 }

@@ -120,9 +120,24 @@ body {
   vertical-align: middle;
 }
 
-.brand-logo {
-  font-size: 22px;
-  line-height: 1;
+.brand-logo-img {
+  width: 40px;
+  height: 40px;
+  object-fit: contain;
+  border-radius: 4px;
+  background: #fff;
+}
+
+.brand-logo-placeholder {
+  width: 40px;
+  height: 40px;
+  background: #f3f4f6;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 10px;
+  color: #999;
 }
 
 .brand-name {
@@ -130,32 +145,10 @@ body {
   color: #111;
 }
 
-.brand-slug {
-  padding: 2px 7px;
-  border-radius: 5px;
-  background: #f3f4f6;
+.brand-desc-text {
   color: #555;
-  font-size: 12px;
-  font-family: monospace;
-}
-
-.brand-status-btn {
-  padding: 3px 10px;
-  border: none;
-  border-radius: 20px;
-  font-size: 11px;
-  font-weight: 600;
-  cursor: pointer;
-}
-
-.brand-status-on {
-  background: #dcfce7;
-  color: #16a34a;
-}
-
-.brand-status-off {
-  background: #fee2e2;
-  color: #dc2626;
+  font-size: 12.5px;
+  line-height: 1.4;
 }
 
 .brand-action-cell {
@@ -216,6 +209,7 @@ body {
   outline: none;
   font-size: 13px;
   transition: border 0.2s;
+  font-family: inherit;
 }
 
 .brand-input:focus {
@@ -224,6 +218,42 @@ body {
 
 .brand-input-error {
   border-color: #f87171;
+}
+
+.brand-input-file {
+  font-size: 13px;
+  color: #444;
+}
+
+.brand-input-file::file-selector-button {
+  padding: 6px 12px;
+  border: 1px solid #e0e0e0;
+  border-radius: 6px;
+  background: #fafafa;
+  color: #333;
+  font-size: 12px;
+  cursor: pointer;
+  margin-right: 12px;
+  transition: all 0.2s;
+}
+
+.brand-input-file::file-selector-button:hover {
+  background: #f3f4f6;
+}
+
+.brand-preview-wrap {
+  margin-top: 8px;
+  padding: 8px;
+  border: 1px dashed #d1d5db;
+  border-radius: 8px;
+  display: inline-block;
+}
+
+.brand-preview-img {
+  max-width: 100px;
+  max-height: 100px;
+  object-fit: contain;
+  display: block;
 }
 
 .brand-error-msg {
@@ -244,6 +274,7 @@ body {
   font-size: 13px;
   font-weight: 600;
   cursor: pointer;
+  margin-top: 4px;
 }
 
 .brand-submit-btn:hover {

@@ -1,7 +1,7 @@
 const BASE_URL = import.meta.env.VITE_BASE_URL;
 
 const getAllUsers = async () => {
-  const url = `${BASE_URL}/api/users`;
+  const url = `${BASE_URL}/users`;
   try {
     const response = await fetch(url, {
       method: "GET",
@@ -16,7 +16,7 @@ const getAllUsers = async () => {
     }
 
     const data = await response.json();
-    return data;
+    return data.result ? (data.result.data || data.result) : data;
   } catch (error) {
     console.error("Error fetching users:", error);
     throw error;
@@ -24,7 +24,7 @@ const getAllUsers = async () => {
 };
 
 const createUser = async (userData) => {
-  const url = `${BASE_URL}/api/users`;
+  const url = `${BASE_URL}/users`;
   try {
     const response = await fetch(url, {
       method: "POST",
@@ -39,7 +39,7 @@ const createUser = async (userData) => {
     }
 
     const data = await response.json();
-    return data;
+    return data.result ? (data.result.data || data.result) : data;
   } catch (error) {
     console.error("Error creating user:", error);
     throw error;
@@ -47,7 +47,7 @@ const createUser = async (userData) => {
 };
 
 const updateUser = async (userId, userData) => {
-  const url = `${BASE_URL}/api/users/${userId}`;
+  const url = `${BASE_URL}/users/${userId}`;
   try {
     const response = await fetch(url, {
       method: "PUT",
@@ -63,7 +63,7 @@ const updateUser = async (userId, userData) => {
     }
 
     const data = await response.json();
-    return data;
+    return data.result ? (data.result.data || data.result) : data;
   } catch (error) {
     console.error("Error updating user:", error);
     throw error;
@@ -71,7 +71,7 @@ const updateUser = async (userId, userData) => {
 };
 
 const deleteUser = async (userId) => {
-  const url = `${BASE_URL}/api/users/${userId}`;
+  const url = `${BASE_URL}/users/${userId}`;
   try {
     const response = await fetch(url, {
       method: "DELETE",
@@ -93,7 +93,7 @@ const deleteUser = async (userId) => {
 };
 
 const getUserById = async (userId) => {
-  const url = `${BASE_URL}/api/users/${userId}`;
+  const url = `${BASE_URL}/users/${userId}`;
   try {
     const response = await fetch(url, {
       method: "GET",
@@ -108,7 +108,7 @@ const getUserById = async (userId) => {
     }
 
     const data = await response.json();
-    return data;
+    return data.result ? (data.result.data || data.result) : data;
   } catch (error) {
     console.error("Error fetching user:", error);
     throw error;
@@ -116,7 +116,7 @@ const getUserById = async (userId) => {
 };
 
 const getMyProfile = async () => {
-  const url = `${BASE_URL}/api/users/me`;
+  const url = `${BASE_URL}/users/me`;
   const token = localStorage.getItem("token");
 
   try {
@@ -133,7 +133,7 @@ const getMyProfile = async () => {
     }
 
     const data = await response.json();
-    return data;
+    return data.result ? (data.result.data || data.result) : data;
   } catch (error) {
     console.error("Error fetching profile:", error);
     throw error;

@@ -1,12 +1,17 @@
-import { useState } from "react";
+import { useState, useRef, useMemo, useEffect } from "react";
 import "./Brand.css";
 
-const initialBrands = [
-  { id: 1, name: "Apple", slug: "apple", logo: "🍎", status: true },
-  { id: 2, name: "Samsung", slug: "samsung", logo: "💎", status: true },
-  { id: 3, name: "Xiaomi", slug: "xiaomi", logo: "⚡", status: true },
-  { id: 4, name: "OPPO",slug: "oppo", logo: "🌸", status: false },
-];
+import SuccessPopup from "../Popup/SuccessPopup";
+import ErrorPopup from "../Popup/ErrorPopup";
+import ConfirmPopup from "../Popup/ConfirmPopup";
+import { CloudinaryService } from "../../service/CloudinaryService";
+
+import {
+  createBrand,
+  getAllBrands,
+  updateBrand,
+  deleteBrand,
+} from "../../service/BrandService";
 
 const TrashIcon = () => (
   <svg
@@ -59,58 +64,64 @@ const PlusIcon = () => (
 );
 
 export default function Brand() {
-  const [brands, setBrands] = useState(initialBrands);
+  const [brands, setBrands] = useState([]);
   const [form, setForm] = useState({
     name: "",
-    slug: "",
+    description: "",
     logo: "",
   });
 
+  const [confirmOpen, setConfirmOpen] = useState(false);
+  const [successOpen, setSuccessOpen] = useState(false);
+  const [errorOpen, setErrorOpen] = useState(false);
+
+  const [successMsg, setSuccessMsg] = useState("");
+  const [errorMsg, setErrorMsg] = useState("");
+
   const [editId, setEditId] = useState(null);
+  const [deleteId, setDeleteId] = useState(null);
   const [errors, setErrors] = useState({});
   const [search, setSearch] = useState("");
+  const fileInputRef = useRef(null);
+
+  useEffect(() => {
+    const fetchBrands = async () => {
+      try {
+        const data = await getAllBrands();
+        setBrands(data);
+      } catch (error) {
+        console.error("Error fetching brands:", error);
+        setErrorMsg("Lỗi khi tải danh sách thương hiệu");
+        setErrorOpen(true);
+      }
+    };
+
+    fetchBrands();
+  }, []);
 
   const validate = () => {
     const e = {};
-
-    if (!form.name.trim()) {
-      e.name = "Vui lòng nhập tên thương hiệu";
-    }
-
-    if (!form.slug.trim()) {
-      e.slug = "Vui lòng nhập slug";
-    }
-
+    if (!form.name.trim()) e.name = "Vui lòng nhập tên thương hiệu";
     return e;
   };
 
   const handleChange = (key) => (e) => {
-    const value = e.target.value;
-
     setForm((prev) => ({
       ...prev,
-      [key]: value,
-      ...(key === "name" && !editId
-        ? {
-            slug: value
-              .toLowerCase()
-              .replace(/\s+/g, "-")
-              .replace(/[^a-z0-9-]/g, ""),
-          }
-        : {}),
+      [key]: e.target.value,
     }));
+    if (errors[key]) setErrors((prev) => ({ ...prev, [key]: "" }));
+  };
 
-    if (errors[key]) {
-      setErrors((prev) => ({
-        ...prev,
-        [key]: "",
-      }));
+  const handleFileChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      setForm((prev) => ({ ...prev, logo: file }));
     }
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
-
     const errs = validate();
 
     if (Object.keys(errs).length) {
@@ -119,287 +130,262 @@ export default function Brand() {
     }
 
     if (editId) {
-      setBrands((prev) =>
-        prev.map((b) =>
-          b.id === editId ? { ...b, ...form } : b
-        )
-      );
-
+      updateBrand(editId, form)
+        .then((updated) => {
+          setBrands((prev) =>
+            prev.map((b) => (b.id === editId ? { ...b, ...updated } : b)),
+          );
+          setSuccessMsg("Cập nhật thương hiệu thành công");
+          setSuccessOpen(true);
+          setEditId(null);
+        })
+        .catch((err) => {
+          setErrorMsg("Cập nhật thương hiệu thất bại");
+          setErrorOpen(true);
+        });
       setEditId(null);
     } else {
-      setBrands((prev) => [
-        ...prev,
-        {
-          id: Date.now(),
-          ...form,
-          status: true,
-        },
-      ]);
+
+      CloudinaryService.uploadImage(form.logo)
+        .then((imageUrl) => {
+          return createBrand({ ...form, logo: imageUrl });
+        })
+        .then((created) => {
+          setBrands((prev) => [...prev, created]);
+          setSuccessMsg("Thêm thương hiệu thành công");
+          setSuccessOpen(true);
+        })
+        .catch((err) => {
+          setErrorMsg("Thêm thương hiệu thất bại");
+          setErrorOpen(true);
+        }); 
     }
 
-    setForm({
-      name: "",
-      slug: "",
-      logo: "",
-    });
+    // Reset form
+    setForm({ name: "", description: "", logo: "" });
+    if (fileInputRef.current) fileInputRef.current.value = "";
   };
 
   const handleEdit = (brand) => {
     setEditId(brand.id);
-
     setForm({
       name: brand.name,
-      slug: brand.slug,
+      description: brand.description,
       logo: brand.logo,
     });
-
     setErrors({});
   };
 
-  const handleDelete = (id) => {
-    if (window.confirm("Xoá thương hiệu này?")) {
-      setBrands((prev) =>
-        prev.filter((b) => b.id !== id)
-      );
-    }
+  const handleDelete = () => {
+    deleteBrand(deleteId)
+      .then(() => {
+        setBrands((prev) => prev.filter((b) => b.id !== deleteId));
+        setSuccessMsg("Xoá thương hiệu thành công");
+        setSuccessOpen(true);
+      })
+      .catch(() => {
+        setErrorMsg("Xoá thương hiệu thất bại");
+        setErrorOpen(true);
+      });
+    setDeleteId(null);
   };
 
-  const toggleStatus = (id) => {
-    setBrands((prev) =>
-      prev.map((b) =>
-        b.id === id
-          ? { ...b, status: !b.status }
-          : b
-      )
+  const filtered = useMemo(() => {
+    return brands.filter((b) =>
+      b.name.toLowerCase().includes(search.toLowerCase()),
     );
-  };
-
-  const filtered = brands.filter((b) =>
-    b.name.toLowerCase().includes(search.toLowerCase())
-  );
+  }, [brands, search]);
 
   return (
-    <div className="brand-page">
-      <div className="brand-page-head">
-        <div>
-          <h1 className="brand-page-title">
-            Thương hiệu
-          </h1>
-
-          <p className="brand-page-desc">
-            Quản lý danh sách thương hiệu điện thoại
-          </p>
-        </div>
-
-        <div className="brand-badge">
-          {brands.length} thương hiệu
-        </div>
-      </div>
-
-      <div className="brand-wrap">
-        {/* TABLE */}
-        <div className="brand-card">
-          <div className="brand-card-head">
-            <span className="brand-card-title">
-              Danh sách
-            </span>
-
-            <input
-              className="brand-search"
-              placeholder="Tìm thương hiệu..."
-              value={search}
-              onChange={(e) =>
-                setSearch(e.target.value)
-              }
-            />
+    <>
+      {" "}
+      <div className="brand-page">
+        <div className="brand-page-head">
+          <div>
+            <h1 className="brand-page-title">Thương hiệu</h1>
+            <p className="brand-page-desc">
+              Quản lý danh sách thương hiệu điện thoại
+            </p>
           </div>
+          <div className="brand-badge">{brands.length} thương hiệu</div>
+        </div>
 
-          <table className="brand-table">
-            <thead>
-              <tr>
-                <th>Logo</th>
-                <th>Tên</th>
-                <th>Slug</th>
-                <th>Trạng thái</th>
-                <th></th>
-              </tr>
-            </thead>
+        <div className="brand-wrap">
+          {/* TABLE */}
+          <div className="brand-card">
+            <div className="brand-card-head">
+              <span className="brand-card-title">Danh sách</span>
+              <input
+                className="brand-search"
+                placeholder="Tìm thương hiệu..."
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+              />
+            </div>
 
-            <tbody>
-              {filtered.length === 0 && (
+            <table className="brand-table">
+              <thead>
                 <tr>
-                  <td
-                    colSpan={5}
-                    className="brand-empty"
-                  >
-                    Không có dữ liệu
-                  </td>
+                  <th>Logo</th>
+                  <th>Tên</th>
+                  <th>Mô tả</th>
+                  <th></th>
                 </tr>
-              )}
-
-              {filtered.map((b) => (
-                <tr key={b.id} className="brand-row">
-                  <td className="brand-td">
-                    <span className="brand-logo">
-                      {b.logo || "📦"}
-                    </span>
-                  </td>
-
-                  <td className="brand-td">
-                    <span className="brand-name">
-                      {b.name}
-                    </span>
-                  </td>
-
-                  <td className="brand-td">
-                    <code className="brand-slug">
-                      {b.slug}
-                    </code>
-                  </td>
-
-                  <td className="brand-td">
-                    <button
-                      onClick={() =>
-                        toggleStatus(b.id)
-                      }
-                      className={`brand-status-btn ${
-                        b.status
-                          ? "brand-status-on"
-                          : "brand-status-off"
-                      }`}
-                    >
-                      {b.status ? "Hiện" : "Ẩn"}
-                    </button>
-                  </td>
-
-                  <td className="brand-action-cell">
-                    <button
-                      className="brand-icon-btn"
-                      onClick={() => handleEdit(b)}
-                    >
-                      <EditIcon />
-                    </button>
-
-                    <button
-                      className="brand-icon-btn brand-icon-btn-red"
-                      onClick={() =>
-                        handleDelete(b.id)
-                      }
-                    >
-                      <TrashIcon />
-                    </button>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-
-        {/* FORM */}
-        <div className="brand-card">
-          <div className="brand-card-head">
-            <span className="brand-card-title">
-              {editId
-                ? "Sửa thương hiệu"
-                : "Thêm thương hiệu"}
-            </span>
-
-            {editId && (
-              <button
-                className="brand-cancel-btn"
-                onClick={() => {
-                  setEditId(null);
-
-                  setForm({
-                    name: "",
-                    slug: "",
-                    logo: "",
-                  });
-
-                  setErrors({});
-                }}
-              >
-                Huỷ
-              </button>
-            )}
+              </thead>
+              <tbody>
+                {filtered.length === 0 && (
+                  <tr>
+                    <td colSpan={4} className="brand-empty">
+                      Không có dữ liệu
+                    </td>
+                  </tr>
+                )}
+                {filtered.map((b) => (
+                  <tr key={b.id} className="brand-row">
+                    <td className="brand-td">
+                      {b.logo ? (
+                        <img
+                          src={b.logo}
+                          alt={b.name}
+                          className="brand-logo-img"
+                        />
+                      ) : (
+                        <div className="brand-logo-placeholder">Trống</div>
+                      )}
+                    </td>
+                    <td className="brand-td">
+                      <span className="brand-name">{b.name}</span>
+                    </td>
+                    <td className="brand-td">
+                      <span className="brand-desc-text">
+                        {b.description || "—"}
+                      </span>
+                    </td>
+                    <td className="brand-action-cell">
+                      <button
+                        className="brand-icon-btn"
+                        onClick={() => handleEdit(b)}
+                      >
+                        <EditIcon />
+                      </button>
+                      <button
+                        className="brand-icon-btn brand-icon-btn-red"
+                        onClick={() => {
+                          setDeleteId(b.id);
+                          setConfirmOpen(true);
+                        }}
+                      >
+                        <TrashIcon />
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
           </div>
 
-          <form
-            onSubmit={handleSubmit}
-            className="brand-form"
-          >
-            <Field
-              label="Tên thương hiệu *"
-              error={errors.name}
-            >
-              <input
-                className={`brand-input ${
-                  errors.name
-                    ? "brand-input-error"
-                    : ""
-                }`}
-                placeholder="VD: Samsung"
-                value={form.name}
-                onChange={handleChange("name")}
-              />
-            </Field>
+          {/* FORM */}
+          <div className="brand-card">
+            <div className="brand-card-head">
+              <span className="brand-card-title">
+                {editId ? "Sửa thương hiệu" : "Thêm thương hiệu"}
+              </span>
+              {editId && (
+                <button
+                  className="brand-cancel-btn"
+                  onClick={() => {
+                    setEditId(null);
+                    setForm({ name: "", description: "", logo: "" });
+                    if (fileInputRef.current) fileInputRef.current.value = "";
+                    setErrors({});
+                  }}
+                >
+                  Huỷ
+                </button>
+              )}
+            </div>
 
-            <Field
-              label="Slug *"
-              error={errors.slug}
-            >
-              <input
-                className={`brand-input ${
-                  errors.slug
-                    ? "brand-input-error"
-                    : ""
-                }`}
-                placeholder="VD: samsung"
-                value={form.slug}
-                onChange={handleChange("slug")}
-              />
-            </Field>
+            <form onSubmit={handleSubmit} className="brand-form">
+              <Field label="Tên thương hiệu *" error={errors.name}>
+                <input
+                  className={`brand-input ${errors.name ? "brand-input-error" : ""}`}
+                  placeholder="VD: Samsung"
+                  value={form.name}
+                  onChange={handleChange("name")}
+                />
+              </Field>
 
-            <Field label="Emoji / Logo">
-              <input
-                className="brand-input"
-                placeholder="VD: 💎"
-                value={form.logo}
-                onChange={handleChange("logo")}
-              />
-            </Field>
+              <Field label="Mô tả">
+                <textarea
+                  className="brand-input"
+                  placeholder="Nhập mô tả ngắn gọn..."
+                  rows={3}
+                  value={form.description}
+                  onChange={handleChange("description")}
+                  style={{ resize: "vertical" }}
+                />
+              </Field>
 
-            <button
-              type="submit"
-              className="brand-submit-btn"
-            >
-              <PlusIcon />
+              <Field label="Logo (Tải ảnh lên)">
+                <input
+                  type="file"
+                  accept="image/*"
+                  className="brand-input-file"
+                  ref={fileInputRef}
+                  onChange={handleFileChange}
+                />
+                {/* Hiển thị preview ảnh nếu đang có ảnh (sửa hoặc vừa upload) */}
+                {form.logo && (
+                  <div className="brand-preview-wrap">
+                    <img
+                      src={form.logo}
+                      alt="Preview"
+                      className="brand-preview-img"
+                    />
+                  </div>
+                )}
+              </Field>
 
-              {editId
-                ? "Cập nhật"
-                : "Thêm thương hiệu"}
-            </button>
-          </form>
+              <button type="submit" className="brand-submit-btn">
+                <PlusIcon />
+                {editId ? "Cập nhật" : "Thêm thương hiệu"}
+              </button>
+            </form>
+          </div>
         </div>
       </div>
-    </div>
+      <ConfirmPopup
+        isOpen={confirmOpen}
+        onClose={() => setConfirmOpen(false)}
+        onConfirm={() => {
+          handleDelete();
+          setConfirmOpen(false);
+        }}
+        title="Xác nhận xoá"
+        message="Bạn có chắc muốn xoá thương hiệu này?"
+      />
+      <SuccessPopup
+        isOpen={successOpen}
+        onClose={() => setSuccessOpen(false)}
+        title="Thành công"
+        message={successMsg}
+      />
+      <ErrorPopup
+        isOpen={errorOpen}
+        onClose={() => setErrorOpen(false)}
+        title="Lỗi"
+        message={errorMsg}
+      />
+    </>
   );
 }
 
 function Field({ label, error, children }) {
   return (
     <div className="brand-field">
-      <label className="brand-label">
-        {label}
-      </label>
-
+      <label className="brand-label">{label}</label>
       {children}
-
-      {error && (
-        <span className="brand-error-msg">
-          {error}
-        </span>
-      )}
+      {error && <span className="brand-error-msg">{error}</span>}
     </div>
   );
 }

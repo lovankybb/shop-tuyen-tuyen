@@ -1,7 +1,7 @@
 const BASE_URL = import.meta.env.VITE_BASE_URL;
 
 const getAllColors   = async () => {
-    const url = `${BASE_URL}/api/colors`;       
+    const url = `${BASE_URL}/colors`;       
     try {
         const response = await fetch(url, {
             method: "GET",
@@ -22,7 +22,7 @@ const getAllColors   = async () => {
 }
 
 const createColor = async (colorData) => {
-    const url = `${BASE_URL}/api/colors`;
+    const url = `${BASE_URL}/colors`;
     try {
         const response = await fetch(url, {
             method: "POST",
@@ -44,7 +44,7 @@ const createColor = async (colorData) => {
 }
 
 const updateColor = async (colorId, colorData) => {
-    const url = `${BASE_URL}/api/colors/${colorId}`;
+    const url = `${BASE_URL}/colors/${colorId}`;
     try {
         const response = await fetch(url, {
             method: "PUT",
@@ -66,7 +66,7 @@ const updateColor = async (colorId, colorData) => {
 }
 
 const deleteColor = async (colorId) => {
-    const url = `${BASE_URL}/api/colors/${colorId}`;
+    const url = `${BASE_URL}/colors/${colorId}`;
     try {
         const response = await fetch(url, {
             method: "DELETE",

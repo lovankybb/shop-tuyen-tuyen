@@ -61,6 +61,6 @@ momo:
   partner-code: ${MOM0_PARTNER_CODE}
   access-key: ${MOMO_ACCESS_KEY}
   secret-key: ${MOMO_SECRET_KEY}
-  return-url: ${MOMO_API_URL}
+  redirect-url: ${MOMO_API_URL}
   api-url:  ${MOMO_API_URL}
-  notify-url: ${MOMO_NOTIFY_URL}
+  ipn-url: ${MOMO_NOTIFY_URL}

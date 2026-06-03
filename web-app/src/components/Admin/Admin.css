@@ -178,7 +178,7 @@ body {
   color: #777;
   margin-top: 5px;
 }
-
+/* 
 .stat-grid {
   display: grid;
   grid-template-columns: repeat(3,1fr);
@@ -201,7 +201,7 @@ body {
   font-size: 28px;
   font-weight: bold;
   margin-top: 10px;
-}
+} */
 
 /* RESPONSIVE */
 

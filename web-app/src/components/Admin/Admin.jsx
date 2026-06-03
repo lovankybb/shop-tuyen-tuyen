@@ -10,6 +10,10 @@ import OrderManagement from "./OrderManagement";
 import ProductManagement from "./ProductManagement";
 import Color from "./Color";
 import Version from "./Version";
+import CreateProductVariants from "./CreateProductVariants";
+import UpdateProduct from "./UpdateProduct";
+import ProductVariantManagement from "./ProductVariantManagement";
+
 /* ── Icons ── */
 const ICONS = {
   dashboard: (
@@ -196,7 +200,7 @@ const NAV_GROUPS = [
     items: [
       { id: "products", label: "Danh sách SP", icon: "products" },
       { id: "create", label: "Thêm sản phẩm", icon: "create" },
-      { id: "categories", label: "Thêm danh mục", icon: "category" },
+      { id: "category", label: "Thêm danh mục", icon: "category" },
       { id: "brand", label: "Thêm thương hiệu", icon: "brand" },
       { id: "color", label: "Thêm màu sắc", icon: "color" },
       { id: "version", label: "Thêm phiên bản", icon: "version" },
@@ -215,6 +219,17 @@ const NAV_GROUPS = [
 export default function Admin() {
   const [page, setPage] = useState("dashboard");
   const [collapsed, setCollapsed] = useState(false);
+  const [selectedProduct, setSelectedProduct] = useState(null);
+
+  const openCreateProductVariants = (productId, versions, colors) => {
+    setPage("create-variants");
+    setSelectedProduct({ productId, versions, colors });
+  };
+
+  const openProductVariantManagement = (product) => {
+    setPage("product-variants");
+    setSelectedProduct(product);
+  };
 
   const renderPage = () => {
     switch (page) {
@@ -222,14 +237,23 @@ export default function Admin() {
         return <Dashboard />;
 
       case "products":
-        return <ProductManagement onCreateProduct={() => setPage("create")} />;
-
-      case "create":
         return (
-          <CreateProduct
-            onSuccess={() => setPage("products")}
+          <ProductManagement
+            onCreateProduct={openCreateProductVariants}
+            onUpdateProduct={setSelectedProduct}
           />
         );
+
+      case "create":
+        return <CreateProduct onSuccess={() => setPage("products")} />;
+      
+      case "update":
+        return <UpdateProduct productId={selectedProduct?.id} onSuccess={() => setPage("products")} />;
+
+      case "create-variants":
+        return <CreateProductVariants {...selectedProduct} />;
+      case "product-variants":
+        return <ProductVariantManagement productId={selectedProduct?.productId} />;
 
       case "orders":
         return <OrderManagement />;

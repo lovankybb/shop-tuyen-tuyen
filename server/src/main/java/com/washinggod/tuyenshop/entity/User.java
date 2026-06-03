@@ -3,8 +3,10 @@ package com.washinggod.tuyenshop.entity;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
+import java.util.Set;
 
 @Entity
+@Table(name = "users")
 @Getter
 @Setter
 @Builder
@@ -17,13 +19,20 @@ public class User {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long id;
 
-    @Column(columnDefinition = "TEXT", unique = true)
+    @Column(unique = true, nullable = false)
     String username;
 
-    @Column(columnDefinition = "TEXT")
+    @Column(nullable = false)
     String password;
 
     String email;
+    String fullName;
 
-    String phone;
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(
+            name = "user_roles",
+            joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "role_id")
+    )
+    Set<Role> roles;
 }

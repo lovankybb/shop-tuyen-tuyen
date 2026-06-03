@@ -1,166 +1,39 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Product from "./Product";
 import ProductDetail from "./ProductDetail";
-import SuccessPopup from "../Popup/SuccessPopup"
-
-import "./Shop.css"; // Nhúng file style riêng biệt vừa tách vào đây
-
-const PRODUCTS = [
-  {
-    id: 1,
-    badge: "Mới nhất",
-    brand: "Samsung",
-    name: "Galaxy S25 Ultra",
-    description: "Snapdragon 8 Elite, Camera 200MP AI, Pin 5000mAh, Titanium",
-    price: "31.990.000",
-    oldPrice: "34.990.000",
-    rating: 4.9,
-    reviewCount: 2840,
-    category: "Samsung",
-    image: "https://placehold.co/130x200/0a1a3e/00b4ff?text=S25+Ultra",
-    images: [
-      "https://placehold.co/200x320/0a1a3e/00b4ff?text=S25+Front",
-      "https://placehold.co/200x320/0a1a3e/0066ff?text=S25+Side",
-      "https://placehold.co/200x320/0a1a3e/00b4ff?text=S25+Back",
-      "https://placehold.co/200x320/0a1a3e/0044cc?text=S25+Camera",
-    ],
-    versions: ["256GB", "512GB", "1TB"],
-    colors: [
-      { label: "Titanium Black", hex: "#1a1a2e" },
-      { label: "Titanium Silver", hex: "#8899aa" },
-      { label: "Titanium Blue", hex: "#1a4a8a" },
-    ],
-  },
-  {
-    id: 2,
-    badge: "HOT",
-    brand: "Apple",
-    name: "iPhone 16 Pro Max",
-    description: "A18 Pro, Camera 48MP Fusion, Action Button, ProMotion 120Hz",
-    price: "34.990.000",
-    oldPrice: "36.990.000",
-    rating: 4.8,
-    reviewCount: 3210,
-    category: "Apple",
-    image: "https://placehold.co/130x200/0a1a3e/60aaff?text=iPhone+16",
-    images: [
-      "https://placehold.co/200x320/0a1a3e/60aaff?text=iPhone+Front",
-      "https://placehold.co/200x320/0a1a3e/3388ff?text=iPhone+Side",
-      "https://placehold.co/200x320/0a1a3e/60aaff?text=iPhone+Back",
-      "https://placehold.co/200x320/0a1a3e/2266cc?text=iPhone+Cam",
-    ],
-    versions: ["256GB", "512GB", "1TB"],
-    colors: [
-      { label: "Natural Titanium", hex: "#b0a090" },
-      { label: "Black Titanium", hex: "#2a2a3a" },
-      { label: "Desert Titanium", hex: "#c8a870" },
-    ],
-  },
-  {
-    id: 3,
-    badge: "Giảm giá",
-    brand: "Xiaomi",
-    name: "Xiaomi 15 Ultra",
-    description: "Snapdragon 8 Gen 4, Leica Camera 50MP, Pin 6000mAh, Sạc 90W",
-    price: "22.990.000",
-    oldPrice: "26.990.000",
-    rating: 4.7,
-    reviewCount: 985,
-    category: "Xiaomi",
-    image: "https://placehold.co/130x200/0a1a3e/00ddff?text=Xiaomi+15",
-    images: [
-      "https://placehold.co/200x320/0a1a3e/00ddff?text=Mi+Front",
-      "https://placehold.co/200x320/0a1a3e/00aacc?text=Mi+Side",
-      "https://placehold.co/200x320/0a1a3e/00ddff?text=Mi+Back",
-      "https://placehold.co/200x320/0a1a3e/0088aa?text=Mi+Lens",
-    ],
-    versions: ["256GB", "512GB"],
-    colors: [
-      { label: "Matte Black", hex: "#151520" },
-      { label: "Glacier White", hex: "#ddeeff" },
-      { label: "Ceramic Blue", hex: "#1a3a6a" },
-    ],
-  },
-  {
-    id: 4,
-    badge: "Mới",
-    brand: "Google",
-    name: "Pixel 9 Pro XL",
-    description: "Google Tensor G4, AI Photography, 7 năm cập nhật, Màn hình LTPO",
-    price: "28.490.000",
-    oldPrice: "30.990.000",
-    rating: 4.6,
-    reviewCount: 720,
-    category: "Google",
-    image: "https://placehold.co/130x200/0a1a3e/4488ff?text=Pixel+9",
-    images: [
-      "https://placehold.co/200x320/0a1a3e/4488ff?text=Pixel+Front",
-      "https://placehold.co/200x320/0a1a3e/2266dd?text=Pixel+Side",
-      "https://placehold.co/200x320/0a1a3e/4488ff?text=Pixel+Back",
-      "https://placehold.co/200x320/0a1a3e/1155bb?text=Pixel+AI",
-    ],
-    versions: ["128GB", "256GB", "512GB"],
-    colors: [
-      { label: "Obsidian", hex: "#1a1a1a" },
-      { label: "Porcelain", hex: "#e8e0d5" },
-      { label: "Hazel", hex: "#7a8a6a" },
-    ],
-  },
-  {
-    id: 5,
-    badge: "Bestseller",
-    brand: "OPPO",
-    name: "OPPO Find X8 Pro",
-    description: "Dimensity 9400, Hasselblad Camera, Sạc 100W SUPERVOOC, MariSilicon X2",
-    price: "26.990.000",
-    oldPrice: "28.990.000",
-    rating: 4.7,
-    reviewCount: 1105,
-    category: "OPPO",
-    image: "https://placehold.co/130x200/0a1a3e/0099cc?text=Find+X8",
-    images: [
-      "https://placehold.co/200x320/0a1a3e/0099cc?text=Find+Front",
-      "https://placehold.co/200x320/0a1a3e/0077aa?text=Find+Side",
-      "https://placehold.co/200x320/0a1a3e/0099cc?text=Find+Back",
-      "https://placehold.co/200x320/0a1a3e/005588?text=Hasselblad",
-    ],
-    versions: ["256GB", "512GB"],
-    colors: [
-      { label: "Space Black", hex: "#0a0a18" },
-      { label: "Pearl White", hex: "#f0eae0" },
-    ],
-  },
-  {
-    id: 6,
-    badge: null,
-    brand: "OnePlus",
-    name: "OnePlus 13",
-    description: "Snapdragon 8 Gen 4, Hasselblad 50MP, Sạc 100W, Pin 6000mAh khổng lồ",
-    price: "19.990.000",
-    oldPrice: "22.490.000",
-    rating: 4.5,
-    reviewCount: 843,
-    category: "OnePlus",
-    image: "https://placehold.co/130x200/0a1a3e/3366ff?text=OnePlus+13",
-    images: [
-      "https://placehold.co/200x320/0a1a3e/3366ff?text=OP+Front",
-      "https://placehold.co/200x320/0a1a3e/1144dd?text=OP+Side",
-      "https://placehold.co/200x320/0a1a3e/3366ff?text=OP+Back",
-      "https://placehold.co/200x320/0a1a3e/0033bb?text=OP+Cam",
-    ],
-    versions: ["256GB", "512GB"],
-    colors: [
-      { label: "Midnight Ocean", hex: "#0a1a3a" },
-      { label: "Arctic Dawn", hex: "#c8d8e8" },
-    ],
-  },
-];
+import SuccessPopup from "../Popup/SuccessPopup";
+import { getAllProducts } from "../../service/ProductService";
+import "./Shop.css";
 
 const FILTERS = ["Tất cả", "Samsung", "Apple", "Xiaomi", "Google", "OPPO", "Vivo", "Realme", "OnePlus"];
 
 
 
 export default function Shop({handleAddToCart}) {
+  const [PRODUCTS, setPRODUCTS] = useState([]);
+
+  useEffect(() => {
+    getAllProducts().then(data => {
+       // Convert backend data to Shop format
+       const formatted = data.map(p => ({
+         id: p.id,
+         brand: p.brand || "Unknown",
+         name: p.name,
+         description: p.description,
+         price: (p.price || 0).toLocaleString("vi-VN"),
+         oldPrice: p.salePrice ? (p.salePrice || 0).toLocaleString("vi-VN") : null,
+         rating: 5.0,
+         reviewCount: 0,
+         category: p.category || "Unknown",
+         image: p.images && p.images.length > 0 ? p.images[0] : "https://placehold.co/130x200/0a1a3e/00b4ff?text=No+Image",
+         images: p.images && p.images.length > 0 ? p.images : ["https://placehold.co/200x320/0a1a3e/00b4ff?text=No+Image"],
+         versions: ["Mặc định"],
+         colors: [{ label: "Mặc định", hex: "#1a1a2e" }]
+       }));
+       setPRODUCTS(formatted);
+    }).catch(console.error);
+  }, []);
+
   const [filter, setFilter] = useState("Tất cả");
   const [selectedProduct, setSelectedProduct] = useState(null);
 
